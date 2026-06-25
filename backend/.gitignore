@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+
+build/
+.dart_tool/
+
+.idea/
+.vscode/
+
+*.log
