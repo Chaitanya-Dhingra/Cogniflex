@@ -159,10 +159,11 @@ game = GameState()
 async def game_loop() -> None:
     while True:
         game.tick()
+        if game.active:
+            print(f"[loop] active fruits={len(game.fruits)} score={game.score}")
         if tv_clients:
             await broadcast_to_tvs(game.to_dict())
         await asyncio.sleep(TICK_RATE)
-
 
 @app.on_event("startup")
 async def startup_event() -> None:
