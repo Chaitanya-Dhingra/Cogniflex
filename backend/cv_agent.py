@@ -7,6 +7,7 @@ import cv2
 import mediapipe as mp
 import websockets
 from aiohttp import web
+import socket
 
 parser = argparse.ArgumentParser(description="Cogniflex CV Agent")
 parser.add_argument("--server", default="ws://localhost:8000")
@@ -53,6 +54,13 @@ async def mjpeg_handler(request: web.Request) -> web.StreamResponse:
         print("[cv_agent] TV disconnected from video stream")
     return response
 
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+    finally:
+        s.close()
 
 async def start_video_server() -> None:
     app = web.Application()
@@ -60,8 +68,7 @@ async def start_video_server() -> None:
     runner = web.AppRunner(app)
     await runner.setup()
     await web.TCPSite(runner, "0.0.0.0", VIDEO_PORT).start()
-    print(f"[cv_agent] Video feed at http://<this-laptop-ip>:{VIDEO_PORT}/video")
-
+    print(f"[cv_agent] Video feed at http://{get_local_ip()}:{VIDEO_PORT}/video")
 
 async def run() -> None:
     global latest_jpeg
